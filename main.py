@@ -44,6 +44,6 @@ def get_summary(transcript: str) -> str:
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http",
-            host="localhost",
+            host="0.0.0.0",
             port=8000)
             
