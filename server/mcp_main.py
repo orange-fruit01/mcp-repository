@@ -1,15 +1,23 @@
 from fastmcp import FastMCP
 from competitor_analysis_agent import graph
 from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 
-mcp = FastMCP(name="MyServer")
+app = FastAPI()
 
 def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "*"
     return response
+
+@app.options("/{path:path}")
+async def preflight_handler(path: str):
+    response = JSONResponse(content={})
+    return add_cors_headers(response)
+
+mcp = FastMCP(name="MyServer", app=app)
 
 @mcp.tool(description="Greets the user with their name.")
 def greet(name: str) -> JSONResponse:
