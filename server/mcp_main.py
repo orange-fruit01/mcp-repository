@@ -1,30 +1,29 @@
-from fastapi.middleware.cors import CORSMiddleware
 from fastmcp import FastMCP
 from competitor_analysis_agent import graph
+from fastapi.responses import JSONResponse
 
 mcp = FastMCP(name="MyServer")
 
-# Add CORS middleware
-mcp.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
 
 @mcp.tool(description="Greets the user with their name.")
-def greet(name: str) -> str:
+def greet(name: str) -> JSONResponse:
     """
     Greets the user.
 
     Parameters:
     - name (str): The name of the user to greet.
     """
-    return f"Hello {name}!"
+    response = JSONResponse(content={"message": f"Hello {name}!"})
+    return add_cors_headers(response)
 
 @mcp.tool(description="Performs a comprehensive social media competitor analysis.")
-def competitor_analysis(company: str, industry: str, competitor: str) -> dict:
+def competitor_analysis(company: str, industry: str, competitor: str) -> JSONResponse:
     """
     Performs a comprehensive social media competitor analysis using the competitor_analysis_agent.
 
@@ -41,7 +40,8 @@ def competitor_analysis(company: str, industry: str, competitor: str) -> dict:
         "industry": industry,
         "competitor": competitor
     })
-    return result
+    response = JSONResponse(content=result)
+    return add_cors_headers(response)
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http",
