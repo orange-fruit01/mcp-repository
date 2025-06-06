@@ -1,1 +1,9 @@
 fastmcp
+fastapi
+uvicorn
+pandas
+sqlalchemy
+langgraph
+openai
+typing_extensions
+dotenv
