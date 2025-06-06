@@ -1,4 +1,5 @@
 from fastmcp import FastMCP
+from competitor_analysis_agent import graph
 
 mcp = FastMCP(name="MyServer")
 
@@ -12,35 +13,25 @@ def greet(name: str) -> str:
     """
     return f"Hello {name}!"
 
-@mcp.tool(description="Provides the weather for a given city.")
-def get_weather(city: str) -> str:
+@mcp.tool(description="Performs a comprehensive social media competitor analysis.")
+def competitor_analysis(company: str, industry: str, competitor: str) -> dict:
     """
-    Provides the weather for a city.
+    Performs a comprehensive social media competitor analysis using the competitor_analysis_agent.
 
     Parameters:
-    - city (str): The city to get the weather for.
-    """
-    return f"The weather in {city} is sunny."
+    - company (str): The name of the company requesting the analysis.
+    - industry (str): The industry of the company.
+    - competitor (str): The competitor to analyze.
 
-@mcp.tool(description="Gives news about a specific topic.")
-def get_news(topic: str) -> str:
+    Returns:
+    - dict: Contains 'report', 'analysis_summary', and 'key_insights'.
     """
-    Provides news about a topic.
-
-    Parameters:
-    - topic (str): The topic to get news about.
-    """
-    return f"The news about {topic} is that it is a good day."
-
-@mcp.tool(description="Gives a summary of a given transcript.")
-def get_summary(transcript: str) -> str:
-    """
-    Provides a summary of a transcript.
-
-    Parameters:
-    - transcript (str): The transcript to summarize.
-    """
-    return f"The summary of the transcript is that it is a good day."
+    result = graph.invoke({
+        "company": company,
+        "industry": industry,
+        "competitor": competitor
+    })
+    return result
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http",
