@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
-from server import competitor_analysis_agent
+import competitor_analysis_agent  # assuming your agent is saved as this filename
 
 app = FastAPI(
     title="Competitor Analysis API",
@@ -30,4 +30,3 @@ def analyze(request: CompetitorAnalysisRequest):
         return CompetitorAnalysisResponse(**result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
