@@ -7,3 +7,4 @@ langgraph
 openai
 typing_extensions
 dotenv
+psycopg2-binary
