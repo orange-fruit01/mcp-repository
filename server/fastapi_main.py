@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List
-from server import competitor_analysis_agent
+from fastapi import FastAPI
+from langserve import add_routes
+from server.competitor_analysis_agent import graph  # Import your compiled graph
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Competitor Analysis API",
@@ -9,25 +9,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Pydantic models for request/response validation
-class CompetitorAnalysisRequest(BaseModel):
-    company: str
-    industry: str
-    competitor: str
+# Expose the graph as a LangServe endpoint (enables /invoke, /stream, /batch, etc.)
+add_routes(
+    app,
+    graph,
+    path="/analyze",  # This will expose /analyze/invoke, /analyze/stream, etc.
+    # Optionally, you can enable/disable endpoints:
+    # enabled_endpoints=["invoke", "stream", "batch", "playground"]
+)
 
-class CompetitorAnalysisResponse(BaseModel):
-    report: str
-    analysis_summary: str
-    key_insights: List[str]
-
-@app.post("/analyze", response_model=CompetitorAnalysisResponse)
-def analyze(request: CompetitorAnalysisRequest):
-    # Prepare input for the graph
-    input_data = request.dict()
-    try:
-        # Call the LangGraph agent synchronously
-        result = competitor_analysis_agent.graph.invoke(input_data)
-        return CompetitorAnalysisResponse(**result)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify your frontend's URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
