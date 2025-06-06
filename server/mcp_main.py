@@ -1,7 +1,17 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastmcp import FastMCP
 from competitor_analysis_agent import graph
 
 mcp = FastMCP(name="MyServer")
+
+# Add CORS middleware
+mcp.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 @mcp.tool(description="Greets the user with their name.")
 def greet(name: str) -> str:
